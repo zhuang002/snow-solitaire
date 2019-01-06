@@ -31,6 +31,7 @@ public class ListedCards extends CardStack {
 	@Override
 	public void onDblClickCard(Card card) throws IOException {
 		// TODO Auto-generated method stub
+		if (this.cards.isEmpty()) return;
 		if (this.cards.getLast().equals(card)) {
 			CardSuit suit=card.getCardSuit();
 			ResolvedCards stack=GameController.getInstance().getResolvedStack(suit);

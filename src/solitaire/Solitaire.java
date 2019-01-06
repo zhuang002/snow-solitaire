@@ -5,11 +5,13 @@ import java.io.IOException;
 
 import javax.swing.JFrame;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
 
 import components.solitaire.CardStack;
 import components.solitaire.EnclosedCards;
@@ -18,6 +20,7 @@ import components.solitaire.ListedCards;
 import components.solitaire.OpenedCards;
 import components.solitaire.ResolvedCards;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import java.awt.FlowLayout;
@@ -74,6 +77,13 @@ public class Solitaire {
 		JButton btnStart = new JButton("New Game");
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				try {
+					GameController.getInstance().start();
+					frame.repaint();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 		upperPanel.add(btnStart);
@@ -119,11 +129,12 @@ public class Solitaire {
 		JPanel midPanel = new JPanel();
 		frame.getContentPane().add(midPanel, BorderLayout.CENTER);
 		GridBagLayout gbl_midPanel = new GridBagLayout();
-		gbl_midPanel.columnWidths = new int[]{0, 0};
-		gbl_midPanel.rowHeights = new int[]{0, 0};
-		gbl_midPanel.columnWeights = new double[]{1.0, Double.MIN_VALUE};
-		gbl_midPanel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
+		//gbl_midPanel.columnWidths = new int[]{0, 0};
+		//gbl_midPanel.rowHeights = new int[]{0, 0};
+		//gbl_midPanel.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+		//gbl_midPanel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
 		midPanel.setLayout(gbl_midPanel);
+		//midPanel.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
 		
 		/*JPanel nwPanel = new JPanel();
 		GridBagConstraints gbc_panel = new GridBagConstraints();
@@ -153,23 +164,27 @@ public class Solitaire {
 		
 		
 		CardStack enclosedStack = controller.getClosedStack();
-		c.fill = GridBagConstraints.BOTH;
-		c.gridwidth=4;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.anchor=GridBagConstraints.NORTH;
+		c.gridwidth=2;
+		c.ipady=0;
 		c.gridheight=1;
 		c.weightx=0.2;
-		c.weighty=0.2;
+		c.weighty=0.1;
 		c.gridx = 0;
 		c.gridy = 0;
+		//enclosedStack.setBorder(BorderFactory.createLineBorder(Color.black));
 		midPanel.add(enclosedStack,c);
 
 		CardStack openStack = controller.getOpenedStack();
-		c.fill = GridBagConstraints.BOTH;
-		c.gridwidth=4;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridwidth=3;
 		c.gridheight=1;
 		c.weightx=0.2;
-		c.weighty=0.2;
-		c.gridx = 1;
+		//c.weighty=Double.MIN_VALUE;
+		c.gridx = 2;
 		c.gridy = 0;
+		//openStack.setBorder(BorderFactory.createLineBorder(Color.red));
 		midPanel.add(openStack,c);
 		
 
@@ -177,13 +192,14 @@ public class Solitaire {
 		for (int i=0;i<resolvedStacks.length;i++)
 		{
 			CardStack stack=resolvedStacks[i];
-			c.fill = GridBagConstraints.BOTH;
+			c.fill = GridBagConstraints.HORIZONTAL;
 			c.gridwidth=1;
 			c.gridheight=1;
-			c.weightx=0.1;
-			c.weighty=0.2;
-			c.gridx = 2+i;
+			c.weightx=0.2;
+			//c.weighty=Double.MIN_VALUE;
+			c.gridx = 5+i;
 			c.gridy = 0;
+			//stack.setBorder(BorderFactory.createLineBorder(Color.blue));
 			midPanel.add(stack,c);
 		}
 
@@ -191,13 +207,16 @@ public class Solitaire {
 		for (int i=0;i<listedStacks.length;i++)
 		{
 			CardStack stack=listedStacks[i];
+			c.anchor = GridBagConstraints.NORTH;
 			c.fill = GridBagConstraints.BOTH;
+			c.ipady=0;
 			c.gridwidth=1;
-			c.gridheight=4;
+			c.gridheight=6;
 			c.weightx=0.1;
-			c.weighty=0.8;
+			c.weighty=1;
 			c.gridx = i;
 			c.gridy = 1;
+			//stack.setBorder(BorderFactory.createLineBorder(Color.green));
 			midPanel.add(stack,c);
 		}
 		

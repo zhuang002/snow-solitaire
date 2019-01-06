@@ -1,21 +1,27 @@
 package components.solitaire;
 
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.security.InvalidParameterException;
+import java.util.Random;
+
+import javax.imageio.ImageIO;
 
 public class GameController {
 	static GameController instance=null;
 	int level=1;
 	int listHorizontal=20;
 	int listVertical=20;
-	int listStacksSize=10;
+	int listStacksSize=8;
 	int resolvedStacksSize=4;
-	
+	Dimension cardDimension=null;
 	int scale=1;
 	OpenedCards openedStack=null;
 	EnclosedCards closeStack=null;
 	ListedCards[] listStacks=null;
 	ResolvedCards[] resolvedStacks=null;
+	Random rand=new Random();
 	
 	
 	public GameController()  {
@@ -121,6 +127,14 @@ public class GameController {
 		}
 		return this.listStacks;
 	}
+	
+	public Dimension getCardDimension() throws IOException {
+		if (this.cardDimension==null) {
+			BufferedImage emptyImg =  ImageIO.read(CardStack.class.getClassLoader().getResource("empty.png"));
+			this.cardDimension=new Dimension(emptyImg.getWidth(),emptyImg.getHeight());
+		}
+		return this.cardDimension;
+	}
 
 	public int getHorizontalEdge() {
 		// TODO Auto-generated method stub
@@ -135,6 +149,62 @@ public class GameController {
 	public void setLevel(int lev) {
 		// TODO Auto-generated method stub
 		this.level=lev;
+	}
+
+	public void start() throws IOException {
+		// TODO Auto-generated method stub
+		int[] cards=suffleCards();
+		
+		this.getClosedStack();
+		this.getOpenedStack();
+		this.getResolvedStacks();
+		this.getListedStacks();
+		
+		this.openedStack.cards.clear();
+		this.closeStack.cards.clear();
+		for (CardStack stack:this.resolvedStacks) 
+			stack.cards.clear();
+		for (CardStack stack:this.listStacks)
+			stack.cards.clear();
+		
+		int idx=0;
+		for (int i=0;i<this.listStacksSize;i++) {
+			for (int j=i;j<this.listStacksSize;j++) {
+				this.listStacks[j].cards.add(new Card(cards[idx],false,this.getCardDimension()));
+				idx++;
+			}
+		}
+		
+		for (int i=0;i<this.listStacksSize;i++) {
+			this.listStacks[i].draw();
+		}
+		
+		for (int i=51;i>=idx;i--) {
+			this.closeStack.cards.add(new Card(cards[idx],false,this.getCardDimension()));
+		}
+		this.closeStack.draw();
+		
+		for (int i=0;i<this.resolvedStacksSize;i++)
+			this.resolvedStacks[i].draw();
+		
+		this.openedStack.draw();
+		
+		
+	}
+
+	private int[] suffleCards() {
+		// TODO Auto-generated method stub
+		int[] cards=new int[52];
+		for (int i=0;i<cards.length;i++) {
+			cards[i]=i;
+		}
+		for (int i=0;i<cards.length;i++) {
+			int idx=rand.nextInt(cards.length);
+			int tmp=cards[idx];
+			cards[idx]=cards[i];
+			cards[i]=tmp;
+		}
+		return cards;
 	}
 
 }

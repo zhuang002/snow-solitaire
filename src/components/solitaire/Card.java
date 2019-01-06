@@ -2,6 +2,8 @@ package components.solitaire;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -9,8 +11,9 @@ import java.security.InvalidParameterException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+import javax.swing.event.MouseInputAdapter;
 
-public class Card extends JPanel {
+public class Card extends JPanel  {
 	int ID;
 	boolean faceup = false;
 	BufferedImage img = null;
@@ -18,12 +21,23 @@ public class Card extends JPanel {
 	static BufferedImage backImg = null;
 
 	public Card(CardSuit s, int n, boolean f, Dimension size) throws IOException {
-		this.ID=getId(s,n);
+		Initialize(getId(s,n),f,size);
+	}
+	
+	private void Initialize(int id, boolean f, Dimension size) throws IOException {
+		// TODO Auto-generated method stub
+		this.ID=id;
 		
 		this.faceup = f;
 		this.setSize(size);
 		foreImg = ImageIO.read(CardStack.class.getClassLoader().getResource(this.getImagePath()));
-		backImg = ImageIO.read(CardStack.class.getClassLoader().getResource("b.gif"));;
+		backImg = ImageIO.read(CardStack.class.getClassLoader().getResource("b.gif"));
+		this.addMouseMotionListener(new CardMouseListener());
+		this.addMouseListener(new CardMouseListener());
+	}
+
+	public Card(int id, boolean f, Dimension size) throws IOException {
+		Initialize(id,f,size);
 	}
 
 
@@ -112,4 +126,19 @@ public class Card extends JPanel {
 		this.faceup=b;
 	}
 
+	private class CardMouseListener extends MouseInputAdapter {
+		public void mouseClicked(MouseEvent e) {
+			try {
+				if (e.isConsumed()) return;
+				Card card=(Card)e.getComponent();
+				if (e.getClickCount()==2)
+					card.onDblClick();
+				else 
+					card.onClick();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+	}
 }

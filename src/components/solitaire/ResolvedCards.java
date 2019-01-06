@@ -13,6 +13,7 @@ public class ResolvedCards extends CardStack {
 	public void draw() {
 		// TODO Auto-generated method stub
 		this.removeAll();
+		if (this.cards.isEmpty()) return;
 		Card card=this.cards.getLast();
 		card.draw();
 		this.add(card);

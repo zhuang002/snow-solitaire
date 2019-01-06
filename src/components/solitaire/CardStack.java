@@ -14,18 +14,18 @@ import javax.swing.border.EmptyBorder;
 
 public abstract class CardStack extends JPanel {
 
-	protected LinkedList<Card> cards;
+	protected LinkedList<Card> cards=new LinkedList<Card>();
 	protected Boolean dropable = false;
 	protected Boolean dragable = false;
 	protected BufferedImage emptyImg = null;
 
 	public CardStack() throws IOException {
-		emptyImg =  ImageIO.read(CardStack.class.getClassLoader().getResource("b.gif"));
+		emptyImg =  ImageIO.read(CardStack.class.getClassLoader().getResource("empty.png"));
 		
-		int hEdge=GameController.getInstance().getHorizontalEdge();
-		int vEdge=GameController.getInstance().getVerticalEdge();
-		//setPreferredSize(new Dimension(emptyImg.getWidth()+hEdge,vEdge));
-		setBorder(new EmptyBorder(vEdge,vEdge,hEdge,hEdge));
+		//int hEdge=GameController.getInstance().getHorizontalEdge();
+		//int vEdge=GameController.getInstance().getVerticalEdge();
+		setPreferredSize(new Dimension(emptyImg.getWidth(),emptyImg.getHeight()));
+		//setBorder(new EmptyBorder(vEdge,vEdge,hEdge,hEdge));
 	}
 
 	
