@@ -15,6 +15,7 @@ public class GameController {
 	int listVertical=20;
 	int listStacksSize=8;
 	int resolvedStacksSize=4;
+	CardSuit[] resolvedStackSuits= {CardSuit.Spade,CardSuit.Heart,CardSuit.Diamond,CardSuit.Club};
 	Dimension cardDimension=null;
 	int scale=1;
 	OpenedCards openedStack=null;
@@ -22,15 +23,10 @@ public class GameController {
 	ListedCards[] listStacks=null;
 	ResolvedCards[] resolvedStacks=null;
 	Random rand=new Random();
+	DragInfo dragInfo=null;
 	
 	
 	public GameController()  {
-		/*openedStack=new OpenedCards();
-		closeStack  = new EnclosedCards();
-		for (int i=0;i<listStacks.length;i++)
-			listStacks[i]=new ListedCards();
-		for (int i=0;i<resolvedStacks.length;i++)
-			resolvedStacks[i]=new ResolvedCards();*/
 	}
 	
 	static public GameController getInstance()  {
@@ -41,7 +37,7 @@ public class GameController {
 			
 	}
 
-	public CardStack getCardStackFromCard(Card card) {
+	/*public CardStack getCardStackFromCard(Card card) {
 		// TODO Auto-generated method stub
 		if (this.closeStack.containsCard(card)) return this.closeStack;
 		if (this.openedStack.containsCard(card)) return this.openedStack;
@@ -52,7 +48,7 @@ public class GameController {
 			if (stack.containsCard(card)) return stack;
 		}
 		return null;
-	}
+	}*/
 
 	public int getLevel() {
 		// TODO Auto-generated method stub
@@ -71,19 +67,25 @@ public class GameController {
 
 	public ResolvedCards getResolvedStack(CardSuit suit) {
 		// TODO Auto-generated method stub
-		switch (suit) {
-			case Spade:
-				return this.resolvedStacks[0];
-			case Heart:
-				return this.resolvedStacks[1];
-			case Diamond:
-				return this.resolvedStacks[2];
-			case Club:
-				return this.resolvedStacks[3];
-			default:
-					throw new InvalidParameterException();
+		for (int i=0;i<this.resolvedStackSuits.length;i++) {
+			if (this.resolvedStackSuits[i]==suit) {
+				return this.resolvedStacks[i];
+			}
 		}
+		return null;
 	}
+	
+	public CardSuit getResolvedStackSuit(CardStack stack) {
+		// TODO Auto-generated method stub
+		for (int i=0;i<this.resolvedStackSuits.length;i++) {
+			if (this.resolvedStacks[i]==stack) {
+				return this.resolvedStackSuits[i];
+			}
+		}
+		return CardSuit.None;
+	}
+	
+	
 
 	public void setClosedStack(EnclosedCards enclosedStack) {
 		// TODO Auto-generated method stub
@@ -116,9 +118,11 @@ public class GameController {
 	public CardStack[] getResolvedStacks() throws IOException {
 		if (this.resolvedStacks==null) {
 			this.resolvedStacks=new ResolvedCards[this.resolvedStacksSize];
-			for (int i=0;i<this.resolvedStacksSize;i++)
+			for (int i=0;i<this.resolvedStacksSize;i++) {
 				this.resolvedStacks[i]=new ResolvedCards();
+			}
 		}
+		
 		return this.resolvedStacks;
 	}
 
@@ -144,15 +148,6 @@ public class GameController {
 		return this.cardDimension;
 	}
 
-	public int getHorizontalEdge() {
-		// TODO Auto-generated method stub
-		return 10;
-	}
-	
-	public int getVerticalEdge() {
-		// TODO Auto-generated method stub
-		return 10;
-	}
 
 	public void setLevel(int lev) {
 		// TODO Auto-generated method stub
@@ -185,20 +180,12 @@ public class GameController {
 		
 		for (int i=0;i<this.listStacksSize;i++) {
 			this.listStacks[i].cards.getLast().setFaceUp(true);
-			this.listStacks[i].draw();
 		}
 		
 		for (int i=51;i>=idx;i--) {
 			this.closeStack.cards.add(new Card(cards[i],false,this.getCardDimension()));
 		}
-		this.closeStack.draw();
-		
-		for (int i=0;i<this.resolvedStacksSize;i++)
-			this.resolvedStacks[i].draw();
-		
-		this.openedStack.draw();
-		
-		
+
 	}
 
 	private int[] suffleCards() {
@@ -215,5 +202,29 @@ public class GameController {
 		}
 		return cards;
 	}
+
+	public void setDragInfo(DragInfo info) {
+		// TODO Auto-generated method stub
+		this.dragInfo=info;
+	}
+	
+	public DragInfo getDragInfo() {
+		return this.dragInfo;
+	}
+
+	public boolean isInDragging() {
+		// TODO Auto-generated method stub
+		return this.dragInfo!=null;
+	}
+
+	public void clearDragInfo() {
+		// TODO Auto-generated method stub
+		this.dragInfo=null;
+	}
+
+	
+
+	
+	
 
 }

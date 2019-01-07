@@ -2,35 +2,20 @@ package solitaire;
 
 import java.awt.EventQueue;
 import java.io.IOException;
-
 import javax.swing.JFrame;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.border.Border;
-
+import javax.swing.event.MouseInputAdapter;
 import components.solitaire.CardStack;
-import components.solitaire.EnclosedCards;
 import components.solitaire.GameController;
-import components.solitaire.ListedCards;
-import components.solitaire.OpenedCards;
-import components.solitaire.ResolvedCards;
-
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JLabel;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
-
 import javax.swing.JButton;
-import java.awt.GridLayout;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
 
 public class Solitaire {
 
@@ -66,6 +51,7 @@ public class Solitaire {
 	 */
 	private void initialize() throws IOException {
 		frame = new JFrame();
+		
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
@@ -134,30 +120,6 @@ public class Solitaire {
 		//gbl_midPanel.columnWeights = new double[]{1.0, Double.MIN_VALUE};
 		//gbl_midPanel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
 		midPanel.setLayout(gbl_midPanel);
-		//midPanel.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
-		
-		/*JPanel nwPanel = new JPanel();
-		GridBagConstraints gbc_panel = new GridBagConstraints();
-		gbc_panel.fill = GridBagConstraints.BOTH;
-		gbc_panel.gridwidth=4;
-		gbc_panel.gridx = 0;
-		gbc_panel.gridy = 0;
-		midPanel.add(nwPanel, gbc_panel);
-		
-		JPanel nePanel = new JPanel();
-		gbc_panel.fill = GridBagConstraints.BOTH;
-		gbc_panel.gridwidth=4;
-		gbc_panel.gridx = 0;
-		gbc_panel.gridy = 4;
-		midPanel.add(nePanel, gbc_panel);
-		
-		JPanel centerPanel = new JPanel();
-		gbc_panel.fill = GridBagConstraints.BOTH;
-		gbc_panel.gridwidth=8;
-		gbc_panel.gridheight=4;
-		gbc_panel.gridx = 1;
-		gbc_panel.gridy = 0;
-		midPanel.add(centerPanel, gbc_panel);*/
 
 		GameController controller = GameController.getInstance();
 		GridBagConstraints c = new GridBagConstraints();
@@ -173,7 +135,6 @@ public class Solitaire {
 		c.weighty=0.1;
 		c.gridx = 0;
 		c.gridy = 0;
-		//enclosedStack.setBorder(BorderFactory.createLineBorder(Color.black));
 		midPanel.add(enclosedStack,c);
 
 		CardStack openStack = controller.getOpenedStack();
@@ -181,10 +142,8 @@ public class Solitaire {
 		c.gridwidth=3;
 		c.gridheight=1;
 		c.weightx=0.2;
-		//c.weighty=Double.MIN_VALUE;
 		c.gridx = 2;
 		c.gridy = 0;
-		//openStack.setBorder(BorderFactory.createLineBorder(Color.red));
 		midPanel.add(openStack,c);
 		
 
@@ -196,10 +155,8 @@ public class Solitaire {
 			c.gridwidth=1;
 			c.gridheight=1;
 			c.weightx=0.2;
-			//c.weighty=Double.MIN_VALUE;
 			c.gridx = 5+i;
 			c.gridy = 0;
-			//stack.setBorder(BorderFactory.createLineBorder(Color.blue));
 			midPanel.add(stack,c);
 		}
 
@@ -216,11 +173,19 @@ public class Solitaire {
 			c.weighty=1;
 			c.gridx = i;
 			c.gridy = 1;
-			//stack.setBorder(BorderFactory.createLineBorder(Color.green));
 			midPanel.add(stack,c);
 		}
 		
-
+		frame.addMouseMotionListener(new CardStackMouseListener());
+		frame.addMouseListener(new CardStackMouseListener());
+	}
+	
+	private class CardStackMouseListener extends MouseInputAdapter {
+		public void mouseReleased(MouseEvent e) {
+			if (!GameController.getInstance().isInDragging())
+				return;
+			GameController.getInstance().clearDragInfo();
+		}
 	}
 
 }

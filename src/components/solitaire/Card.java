@@ -3,9 +3,7 @@ package components.solitaire;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.security.InvalidParameterException;
 
@@ -19,7 +17,7 @@ public class Card extends JPanel  {
 	BufferedImage img = null;
 	BufferedImage foreImg=null;
 	static BufferedImage backImg = null;
-	boolean inDragging=false;
+
 
 	public Card(CardSuit s, int n, boolean f, Dimension size) throws IOException {
 		Initialize(getId(s,n),f,size);
@@ -31,6 +29,7 @@ public class Card extends JPanel  {
 		
 		this.faceup = f;
 		this.setSize(size);
+		this.setPreferredSize(size);
 		foreImg = ImageIO.read(CardStack.class.getClassLoader().getResource(this.getImagePath()));
 		backImg = ImageIO.read(CardStack.class.getClassLoader().getResource("b.gif"));
 		this.addMouseMotionListener(new CardMouseListener());
@@ -89,14 +88,6 @@ public class Card extends JPanel  {
 		return this.faceup;
 	}
 
-	public void setInDragging(boolean b) {
-		// TODO Auto-generated method stub
-		this.inDragging=true;
-	}
-	
-	public boolean isInDragging() {
-		return this.inDragging;
-	}
 	
 	private String getImagePath() {
 		// TODO Auto-generated method stub
@@ -115,26 +106,35 @@ public class Card extends JPanel  {
 	}
 
 	public void onClick() throws IOException {
-		CardStack cardStack = GameController.getInstance().getCardStackFromCard(this);
+		CardStack cardStack = (CardStack)this.getParent();
 		cardStack.onClickCard(this);
 	}
 
 	public void onDblClick() throws IOException {
-		CardStack cardStack = GameController.getInstance().getCardStackFromCard(this);
+		CardStack cardStack = (CardStack)this.getParent(); 
 		cardStack.onDblClickCard(this);
 	}
 
 	public void onDrag() throws IOException {
 		if (!this.faceup) return;
-		CardStack cardStack = GameController.getInstance().getCardStackFromCard(this);
+		CardStack cardStack = (CardStack)this.getParent(); 
 		cardStack.onDrag(this);
 	}
 
 	@Override
 	protected void paintComponent(Graphics g) {
+		this.draw();
+		
 		super.paintComponent(g); // paint the background image and scale it to fill the entire space
 		if (this.img != null) {
-			g.drawImage(this.img, 0, 0, this.getWidth(), this.getHeight(), this);
+			try {
+				Dimension dim=GameController.getInstance().getCardDimension();
+				g.drawImage(this.img, 0, 0, dim.width, dim.height, this);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
 	}
 
@@ -168,6 +168,15 @@ public class Card extends JPanel  {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
+		}
+		
+		public void mouseReleased(MouseEvent e) {
+			if (!GameController.getInstance().isInDragging())
+				return;
+
+			CardStack targetStack = (CardStack)((Card)e.getComponent()).getParent();
+			targetStack.onDrop();
+			GameController.getInstance().clearDragInfo();
 		}
 	}
 

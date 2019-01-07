@@ -1,9 +1,6 @@
 package components.solitaire;
 
-import java.awt.Dimension;
 import java.io.IOException;
-
-import javax.swing.border.EmptyBorder;
 
 public class EnclosedCards extends CardStack {
 
@@ -19,7 +16,7 @@ public class EnclosedCards extends CardStack {
 		this.removeAll();
 		if (!this.cards.isEmpty()) {
 			Card card=this.cards.getLast();
-			card.draw();
+			card.setLocation(0,0);
 			this.add(card);
 		}
 	}
@@ -42,29 +39,10 @@ public class EnclosedCards extends CardStack {
 			openStack.cards.add(c);
 			this.cards.removeLast();
 		}
-		openStack.draw();
 		openStack.repaint();
-		this.draw();
 		this.repaint();
 	}
 
-	@Override
-	public void onDblClickCard(Card card) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void onDrop() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onDrag(Card card) {
-		// TODO Auto-generated method stub
-		// dragging is not allowed in this stack.
-		
-	}
 
 	@Override
 	public void onDblClick() throws IOException {
@@ -76,9 +54,7 @@ public class EnclosedCards extends CardStack {
 				this.cards.add(card);
 			}
 			openedStack.cards.clear();
-			openedStack.draw();
 			openedStack.repaint();
-			this.draw();
 			this.repaint();
 		}
 	}

@@ -1,5 +1,5 @@
 package components.solitaire;
 
 public enum CardSuit {
-	Diamond,Heart,Spade,Club
+	Diamond,Heart,Spade,Club,None
 }
