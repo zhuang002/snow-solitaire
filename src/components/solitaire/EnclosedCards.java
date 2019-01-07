@@ -39,7 +39,7 @@ public class EnclosedCards extends CardStack {
 		for (int i=0;i<n;i++) {
 			Card c=this.cards.getLast();
 			c.setFaceUp(true);
-			openStack.appendCard(c);
+			openStack.cards.add(c);
 			this.cards.removeLast();
 		}
 		openStack.draw();
@@ -62,6 +62,7 @@ public class EnclosedCards extends CardStack {
 	@Override
 	public void onDrag(Card card) {
 		// TODO Auto-generated method stub
+		// dragging is not allowed in this stack.
 		
 	}
 

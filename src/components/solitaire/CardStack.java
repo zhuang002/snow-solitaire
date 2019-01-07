@@ -3,6 +3,7 @@ package components.solitaire;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +12,8 @@ import java.util.LinkedList;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.MouseInputAdapter;
+
 
 public abstract class CardStack extends JPanel {
 
@@ -26,6 +29,9 @@ public abstract class CardStack extends JPanel {
 		//int vEdge=GameController.getInstance().getVerticalEdge();
 		setPreferredSize(new Dimension(emptyImg.getWidth(),emptyImg.getHeight()));
 		//setBorder(new EmptyBorder(vEdge,vEdge,hEdge,hEdge));
+		
+		this.addMouseMotionListener(new CardStackMouseListener());
+		this.addMouseListener(new CardStackMouseListener());
 	}
 
 	
@@ -53,6 +59,28 @@ public abstract class CardStack extends JPanel {
 	abstract public void onDblClick() throws IOException;
 	
 	abstract public void onClick() throws IOException;
-	
 
+
+
+	protected boolean containsCard(Card card) {
+		return this.cards.contains(card);
+	}
+	
+	private class CardStackMouseListener extends MouseInputAdapter {
+		public void mouseClicked(MouseEvent e) {
+			try {
+				if (e.isConsumed()) return;
+				CardStack stack=(CardStack)e.getComponent();
+				if (e.getClickCount()==2)
+					stack.onDblClick();
+				else 
+					stack.onClick();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		
+		
+	}
 }

@@ -13,12 +13,13 @@ public class ListedCards extends CardStack {
 	public void draw() {
 		// TODO Auto-generated method stub
 		this.removeAll();
-		int y = 0;
-		for (Card card:this.cards) {
+		int y = (this.cards.size()-1)*GameController.getInstance().getListVertical();
+		for (int i=this.cards.size()-1;i>=0;i--) {
+			Card card=this.cards.get(i);
 			card.draw();
 			card.setLocation(0, y);
 			this.add(card);
-			y += GameController.getInstance().getListVertical();
+			y -= GameController.getInstance().getListVertical();
 		}
 	}
 
@@ -55,7 +56,8 @@ public class ListedCards extends CardStack {
 	@Override
 	public void onDrag(Card card) {
 		// TODO Auto-generated method stub
-		
+		// allow all faceup cards to be dragged.
+		card.setInDragging(true);
 	}
 
 	@Override

@@ -43,6 +43,14 @@ public class GameController {
 
 	public CardStack getCardStackFromCard(Card card) {
 		// TODO Auto-generated method stub
+		if (this.closeStack.containsCard(card)) return this.closeStack;
+		if (this.openedStack.containsCard(card)) return this.openedStack;
+		for (CardStack stack:resolvedStacks) {
+			if (stack.containsCard(card)) return stack;
+		}
+		for (CardStack stack:listStacks) {
+			if (stack.containsCard(card)) return stack;
+		}
 		return null;
 	}
 
@@ -176,11 +184,12 @@ public class GameController {
 		}
 		
 		for (int i=0;i<this.listStacksSize;i++) {
+			this.listStacks[i].cards.getLast().setFaceUp(true);
 			this.listStacks[i].draw();
 		}
 		
 		for (int i=51;i>=idx;i--) {
-			this.closeStack.cards.add(new Card(cards[idx],false,this.getCardDimension()));
+			this.closeStack.cards.add(new Card(cards[i],false,this.getCardDimension()));
 		}
 		this.closeStack.draw();
 		

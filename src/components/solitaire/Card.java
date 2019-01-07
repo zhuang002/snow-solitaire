@@ -19,6 +19,7 @@ public class Card extends JPanel  {
 	BufferedImage img = null;
 	BufferedImage foreImg=null;
 	static BufferedImage backImg = null;
+	boolean inDragging=false;
 
 	public Card(CardSuit s, int n, boolean f, Dimension size) throws IOException {
 		Initialize(getId(s,n),f,size);
@@ -82,6 +83,21 @@ public class Card extends JPanel  {
 	public int getCardNumber() {
 		return this.ID%13+1;
 	}
+	
+	public boolean isFaceUp() {
+		// TODO Auto-generated method stub
+		return this.faceup;
+	}
+
+	public void setInDragging(boolean b) {
+		// TODO Auto-generated method stub
+		this.inDragging=true;
+	}
+	
+	public boolean isInDragging() {
+		return this.inDragging;
+	}
+	
 	private String getImagePath() {
 		// TODO Auto-generated method stub
 		return Integer.toString(this.getCardNumber())+Character.toLowerCase(this.getCardSuit().toString().charAt(0))+".gif";
@@ -109,6 +125,7 @@ public class Card extends JPanel  {
 	}
 
 	public void onDrag() throws IOException {
+		if (!this.faceup) return;
 		CardStack cardStack = GameController.getInstance().getCardStackFromCard(this);
 		cardStack.onDrag(this);
 	}
@@ -140,5 +157,19 @@ public class Card extends JPanel  {
 				e1.printStackTrace();
 			}
 		}
+		
+		public void mouseDragged(MouseEvent e) {
+			try {
+				if (e.isConsumed()) return;
+				Card card=(Card)e.getComponent();
+				
+				card.onDrag();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
 	}
+
+	
 }

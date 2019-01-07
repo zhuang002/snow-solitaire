@@ -17,24 +17,25 @@ public class OpenedCards extends CardStack {
 		int n = 0;
 		if (level == 0) {
 			n = 1;
-		} else if (this.cards.size() < 3) {
+		} else 
+			n=3;
+		if (this.cards.size() < n) {
 			n = this.cards.size();
-		} else
-			n = 3;
+		}
 
-		int x = 0;
-		for (int i = 0; i < n; i++) {
-			Card card = this.cards.get(this.cards.size() - i);
+		int x = (n-1)*GameController.getInstance().getListHorizontal();
+		for (int i = 0; i <n; i++) {
+			Card card = this.cards.get(this.cards.size()-1-i);
 			card.setLocation(x, 0);
 			card.draw();
 			this.add(card);
-			x += GameController.getInstance().getListHorizontal();
+			x -= GameController.getInstance().getListHorizontal();
 		}
 	}
 
 	@Override
 	public void onClickCard(Card card) throws IOException {
-
+		
 	}
 
 	@Override
@@ -63,7 +64,9 @@ public class OpenedCards extends CardStack {
 	@Override
 	public void onDrag(Card card) {
 		// TODO Auto-generated method stub
-
+		// only allow last card to be dragged.
+		if (this.cards.getLast()==card)
+			card.setInDragging(true);
 	}
 
 	@Override

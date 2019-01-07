@@ -40,7 +40,9 @@ public class ResolvedCards extends CardStack {
 	@Override
 	public void onDrag(Card card) {
 		// TODO Auto-generated method stub
-		
+		// only allow last card to be dragged.
+		if (this.cards.getLast()==card)
+			card.setInDragging(true);
 	}
 
 	@Override
