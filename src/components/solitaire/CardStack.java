@@ -134,6 +134,10 @@ public abstract class CardStack extends JPanel {
 		@Override
 		public void drop(DropTargetDropEvent dtde) {
 			// TODO Auto-generated method stub
+			if (GameController.getInstance().isFreezed) {
+				dtde.rejectDrop();
+				return;
+			}
 			if ((dtde.getDropAction() & DnDConstants.ACTION_COPY_OR_MOVE) != 0) {
 				// Accept the drop and get the transfer data
 				CardStack dragStack = null;

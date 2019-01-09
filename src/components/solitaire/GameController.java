@@ -28,6 +28,7 @@ public class GameController {
 	ResolvedCards[] resolvedStacks=null;
 	Random rand=new Random();
 	DragInfo dragInfo=null;
+	boolean isFreezed=false;
 	
 	
 	public GameController()  {
@@ -254,6 +255,20 @@ public class GameController {
 	public void clearDragInfo() {
 		// TODO Auto-generated method stub
 		this.dragInfo=null;
+	}
+
+	public void freeze() {
+		// TODO Auto-generated method stub
+		this.isFreezed=true;
+	}
+
+	public void unfreeze() {
+		// TODO Auto-generated method stub
+		this.isFreezed=false;
+	}
+	
+	public boolean IsFreezed() {
+		return this.isFreezed;
 	}
 
 	

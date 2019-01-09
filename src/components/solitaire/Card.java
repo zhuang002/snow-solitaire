@@ -121,11 +121,6 @@ public class Card extends JPanel  {
 		cardStack.onDblClickCard(this);
 	}
 
-	/*public void onDrag() throws IOException {
-		if (!this.faceup) return;
-		CardStack cardStack = (CardStack)this.getParent(); 
-		cardStack.onDrag(this);
-	}*/
 
 	@Override
 	protected void paintComponent(Graphics g) {

@@ -31,6 +31,7 @@ public class ListedCards extends CardStack {
 	@Override
 	public void onDblClickCard(Card card) throws IOException {
 		// TODO Auto-generated method stub
+		if (GameController.getInstance().isFreezed) return;
 		if (this.cards.isEmpty()) return;
 		if (this.cards.getLast().equals(card)) {
 			CardSuit suit=card.getCardSuit();
@@ -47,41 +48,7 @@ public class ListedCards extends CardStack {
 		}
 	}
 
-	/*@Override
-	public void onDrop() {
-		// TODO Auto-generated method stub
-		// allow floating stack to dropped if color is different and the number is successive
-		boolean allowDrop=false;
-		Card dragCard=GameController.getInstance().getDragInfo().dragStack.cards.getFirst();
-		if (this.cards.isEmpty()) {
-			
-			if (dragCard.getCardNumber()==13) allowDrop=true;
-		} else {
-			Card targetCard=this.cards.getLast();
-			if (targetCard.getColor()!=dragCard.getColor() && targetCard.getCardNumber()-1==dragCard.getCardNumber())
-				allowDrop=true;
-		}
-		if (allowDrop)
-			super.onDrop();
-	}*/
 
-	/*@Override
-	public void onDrag(Card card) {
-		// TODO Auto-generated method stub
-		// allow all faceup cards to be dragged.
-		
-		try {
-			CardStack dragStack;
-			dragStack = new ListedCards();
-			int idx=this.cards.indexOf(card);
-			for (int i=idx;i<this.cards.size();i++)
-				dragStack.appendCard(this.cards.get(i));
-			GameController.getInstance().setDragInfo(new DragInfo(this,dragStack));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}*/
+	
 
 }

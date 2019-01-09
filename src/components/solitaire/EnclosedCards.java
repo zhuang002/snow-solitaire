@@ -24,6 +24,7 @@ public class EnclosedCards extends CardStack {
 	@Override
 	public void onClickCard(Card card) throws IOException {
 		// TODO Auto-generated method stub
+		if (GameController.getInstance().isFreezed) return;
 		int n=0;
 		if (GameController.getInstance().getLevel()==0) {
 			n=1;
@@ -47,6 +48,7 @@ public class EnclosedCards extends CardStack {
 	@Override
 	public void onDblClick() throws IOException {
 		// TODO Auto-generated method stub
+		if (GameController.getInstance().isFreezed) return;
 		if (this.cards.isEmpty()) {
 			CardStack openedStack=GameController.getInstance().getOpenedStack();
 			for (Card card:openedStack.cards) {

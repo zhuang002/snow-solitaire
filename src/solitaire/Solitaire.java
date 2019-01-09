@@ -2,6 +2,9 @@ package solitaire;
 
 import java.awt.EventQueue;
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javax.swing.JFrame;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -20,6 +23,8 @@ import java.awt.event.MouseEvent;
 public class Solitaire {
 
 	private JFrame frame;
+	private Timer timer=new Timer();
+	private UpdateTimerTask timerTask=null;
 
 	/**
 	 * Launch the application.
@@ -60,39 +65,31 @@ public class Solitaire {
 		JPanel upperPanel = new JPanel();
 		frame.getContentPane().add(upperPanel, BorderLayout.NORTH);
 		
-		JButton btnRestart = new JButton("Restart");
-		btnRestart.setEnabled(false);
-		btnRestart.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					GameController.getInstance().restoreStacks();
-					frame.repaint();
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
-		});
+		
 		
 		JButton btnStart = new JButton("New Game");
-		btnStart.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					GameController.getInstance().start();
-					btnRestart.setEnabled(true);
-					frame.repaint();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
-		});
+		
 		upperPanel.add(btnStart);
 		
+		JButton btnRestart = new JButton("Restart");
+		btnRestart.setEnabled(false);
 		
 		upperPanel.add(btnRestart);
 		
 		JButton btnPause = new JButton("Pause");
+		btnPause.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (timerTask.isStarted()) {
+					timerTask.pause();
+					GameController.getInstance().freeze();
+					btnPause.setText("Resume");
+				} else {
+					GameController.getInstance().unfreeze();
+					timerTask.start();
+					btnPause.setText("Pause");
+				}
+			}
+		});
 		upperPanel.add(btnPause);
 		
 		JButton btnUndo = new JButton("Undo");
@@ -191,6 +188,37 @@ public class Solitaire {
 			midPanel.add(stack,c);
 		}
 		
+		timerTask=new UpdateTimerTask(lblTime);
+		timer.scheduleAtFixedRate(timerTask, 0, 1000);
+		btnStart.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					GameController.getInstance().start();
+					btnRestart.setEnabled(true);
+					timerTask.reset();
+					timerTask.start();
+					frame.repaint();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		
+		btnRestart.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					GameController.getInstance().restoreStacks();
+					timerTask.reset();
+					timerTask.start();
+					frame.repaint();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		
 		frame.addMouseMotionListener(new CardStackMouseListener());
 		frame.addMouseListener(new CardStackMouseListener());
 	}
@@ -201,6 +229,43 @@ public class Solitaire {
 				return;
 			GameController.getInstance().clearDragInfo();
 		}
+	}
+	
+	private class UpdateTimerTask extends TimerTask {
+		private JLabel timerLabel=null;
+		private int counter=0;
+		private boolean isRunning=false;
+		public UpdateTimerTask(JLabel label) {
+			this.timerLabel=label;
+		}
+		public void reset() {
+			// TODO Auto-generated method stub
+			this.isRunning=false;
+			this.counter=0;
+		}
+		public void start() {
+			// TODO Auto-generated method stub
+			this.isRunning=true;
+		}
+		public void pause() {
+			// TODO Auto-generated method stub
+			this.isRunning=false;
+		}
+		public boolean isStarted() {
+			// TODO Auto-generated method stub
+			return this.isRunning;
+		}
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			
+			if (this.isRunning) {
+				counter++;
+				this.timerLabel.setText("Time Elapsed:"+counter+"s");
+				this.timerLabel.repaint();
+			}
+		}
+		
 	}
 
 }

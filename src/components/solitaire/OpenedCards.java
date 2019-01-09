@@ -40,6 +40,7 @@ public class OpenedCards extends CardStack {
 	@Override
 	public void onDblClickCard(Card card) {
 		// TODO Auto-generated method stub
+		if (GameController.getInstance().isFreezed) return;
 		if (this.cards.getLast().equals(card)) {
 			CardSuit suit = card.getCardSuit();
 			ResolvedCards stack = GameController.getInstance().getResolvedStack(suit);
