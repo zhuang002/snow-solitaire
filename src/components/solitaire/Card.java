@@ -121,11 +121,11 @@ public class Card extends JPanel  {
 		cardStack.onDblClickCard(this);
 	}
 
-	public void onDrag() throws IOException {
+	/*public void onDrag() throws IOException {
 		if (!this.faceup) return;
 		CardStack cardStack = (CardStack)this.getParent(); 
 		cardStack.onDrag(this);
-	}
+	}*/
 
 	@Override
 	protected void paintComponent(Graphics g) {
@@ -200,26 +200,6 @@ public class Card extends JPanel  {
 			}
 		}
 		
-		/*public void mouseDragged(MouseEvent e) {
-			try {
-				if (e.isConsumed()) return;
-				Card card=(Card)e.getComponent();
-				
-				card.onDrag();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		}*/
-		
-		/*public void mouseReleased(MouseEvent e) {
-			if (!GameController.getInstance().isInDragging())
-				return;
-
-			CardStack targetStack = (CardStack)((Card)e.getComponent()).getParent();
-			targetStack.onDrop();
-			GameController.getInstance().clearDragInfo();
-		}*/
 	}
 
 	

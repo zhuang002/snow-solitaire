@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.security.InvalidParameterException;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
@@ -20,7 +22,9 @@ public class GameController {
 	int scale=1;
 	OpenedCards openedStack=null;
 	EnclosedCards closeStack=null;
+	LinkedList<Card> enclosedCardsBK=null;
 	ListedCards[] listStacks=null;
+	LinkedList<Card>[] listStacksBK=null;
 	ResolvedCards[] resolvedStacks=null;
 	Random rand=new Random();
 	DragInfo dragInfo=null;
@@ -37,18 +41,6 @@ public class GameController {
 			
 	}
 
-	/*public CardStack getCardStackFromCard(Card card) {
-		// TODO Auto-generated method stub
-		if (this.closeStack.containsCard(card)) return this.closeStack;
-		if (this.openedStack.containsCard(card)) return this.openedStack;
-		for (CardStack stack:resolvedStacks) {
-			if (stack.containsCard(card)) return stack;
-		}
-		for (CardStack stack:listStacks) {
-			if (stack.containsCard(card)) return stack;
-		}
-		return null;
-	}*/
 
 	public int getLevel() {
 		// TODO Auto-generated method stub
@@ -93,8 +85,10 @@ public class GameController {
 	}
 	
 	public CardStack getClosedStack() throws IOException  {
-		if (this.closeStack==null)
+		if (this.closeStack==null) {
 			this.closeStack=new EnclosedCards();
+			this.enclosedCardsBK=new LinkedList<Card>();
+		}
 		return this.closeStack;
 	}
 
@@ -105,8 +99,9 @@ public class GameController {
 	
 	public CardStack getOpenedStack() throws IOException {
 		// TODO Auto-generated method stub
-		if (this.openedStack==null)
+		if (this.openedStack==null) {
 			this.openedStack=new OpenedCards();
+		}
 		return this.openedStack;
 	}
 
@@ -134,8 +129,11 @@ public class GameController {
 	public CardStack[] getListedStacks() throws IOException {
 		if (this.listStacks==null) {
 			this.listStacks=new ListedCards[this.listStacksSize];
-			for (int i=0;i<this.listStacksSize;i++)
+			this.listStacksBK=new LinkedList[this.listStacksSize];
+			for (int i=0;i<this.listStacksSize;i++) {
 				this.listStacks[i]=new ListedCards();
+				this.listStacksBK[i]=new LinkedList<Card>();
+			}
 		}
 		return this.listStacks;
 	}
@@ -185,7 +183,43 @@ public class GameController {
 		for (int i=51;i>=idx;i--) {
 			this.closeStack.cards.add(new Card(cards[i],false,this.getCardDimension()));
 		}
+		
+		backupStacks();
 
+	}
+
+	private void backupStacks() {
+		// TODO Auto-generated method stub
+		
+		this.enclosedCardsBK.clear();
+		this.enclosedCardsBK.addAll(this.closeStack.cards);
+		
+		for (int i=0;i<this.listStacksSize;i++) {
+			this.listStacksBK[i].clear();
+			this.listStacksBK[i].addAll( this.listStacks[i].cards);
+		}
+	}
+	
+	
+	public void restoreStacks() {
+		this.openedStack.cards.clear();
+		
+		this.closeStack.cards.clear();
+		this.closeStack.cards.addAll(this.enclosedCardsBK);
+		for (Card card: this.closeStack.cards) {
+			card.setFaceUp(false);
+		}
+		
+		for (int i=0;i<this.resolvedStacksSize;i++) {
+			this.resolvedStacks[i].cards.clear();
+		}
+		
+		for (int i=0;i<this.listStacksSize;i++) {
+			this.listStacks[i].cards.clear();
+			this.listStacks[i].cards.addAll( this.listStacksBK[i]);
+			for (int j=0;j<this.listStacks[i].cards.size()-1;j++)
+				this.listStacks[i].cards.get(j).setFaceUp(false);
+		}
 	}
 
 	private int[] suffleCards() {

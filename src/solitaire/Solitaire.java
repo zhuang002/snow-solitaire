@@ -60,11 +60,26 @@ public class Solitaire {
 		JPanel upperPanel = new JPanel();
 		frame.getContentPane().add(upperPanel, BorderLayout.NORTH);
 		
+		JButton btnRestart = new JButton("Restart");
+		btnRestart.setEnabled(false);
+		btnRestart.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					GameController.getInstance().restoreStacks();
+					frame.repaint();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		
 		JButton btnStart = new JButton("New Game");
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					GameController.getInstance().start();
+					btnRestart.setEnabled(true);
 					frame.repaint();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
@@ -74,7 +89,7 @@ public class Solitaire {
 		});
 		upperPanel.add(btnStart);
 		
-		JButton btnRestart = new JButton("Restart");
+		
 		upperPanel.add(btnRestart);
 		
 		JButton btnPause = new JButton("Pause");

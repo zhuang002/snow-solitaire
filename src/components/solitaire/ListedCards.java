@@ -47,7 +47,7 @@ public class ListedCards extends CardStack {
 		}
 	}
 
-	@Override
+	/*@Override
 	public void onDrop() {
 		// TODO Auto-generated method stub
 		// allow floating stack to dropped if color is different and the number is successive
@@ -63,9 +63,9 @@ public class ListedCards extends CardStack {
 		}
 		if (allowDrop)
 			super.onDrop();
-	}
+	}*/
 
-	@Override
+	/*@Override
 	public void onDrag(Card card) {
 		// TODO Auto-generated method stub
 		// allow all faceup cards to be dragged.
@@ -82,6 +82,6 @@ public class ListedCards extends CardStack {
 			e.printStackTrace();
 		}
 		
-	}
+	}*/
 
 }

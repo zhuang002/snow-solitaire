@@ -43,36 +43,20 @@ public class OpenedCards extends CardStack {
 		if (this.cards.getLast().equals(card)) {
 			CardSuit suit = card.getCardSuit();
 			ResolvedCards stack = GameController.getInstance().getResolvedStack(suit);
-			if (stack.cards.isEmpty() && card.getCardNumber()==1 ||
-					stack.cards.getLast().getCardNumber() == card.getCardNumber() - 1) {
+			if (stack.cards.isEmpty()) {
+				if (card.getCardNumber()==1) {
+					stack.cards.add(card);
+					this.cards.removeLast();
+				} else return;
+			}
+			else if (stack.cards.getLast().getCardNumber() == card.getCardNumber() - 1) {
 				stack.cards.add(card);
 				this.cards.removeLast();
-				stack.repaint();
-				this.repaint();
-			}
+			} else return;
+			stack.repaint();
+			this.repaint();
 		}
 	}
 
-	@Override
-	public void onDrop() {
-		// TODO Auto-generated method stub
-		// drop is not allowed for this stack
-	}
-
-	@Override
-	public void onDrag(Card card)  {
-		// TODO Auto-generated method stub
-		// only allow last card to be dragged.
-		if (this.cards.getLast()==card) {
-			try {
-				CardStack dragStack;
-				dragStack = new OpenedCards();
-				dragStack.appendCard(card);
-				GameController.getInstance().setDragInfo(new DragInfo(this,dragStack));
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
+	
 }

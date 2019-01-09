@@ -8,7 +8,6 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetContext;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
@@ -64,25 +63,11 @@ public abstract class CardStack extends JPanel {
 
 	}
 
-	protected void onDrop() {
-		DragInfo info = GameController.getInstance().getDragInfo();
-		this.cards.addAll(info.dragStack.cards);
-		info.sourceStack.cards.removeAll(info.dragStack.cards);
-		if (!info.sourceStack.cards.isEmpty() && !info.sourceStack.cards.getLast().isFaceUp()) {
-			info.sourceStack.cards.getLast().setFaceUp(true);
-		}
-
-		info.sourceStack.repaint();
-		this.repaint();
-	}
 
 	protected void draw() throws IOException {
 
 	}
 
-	protected void onDrag(Card card) {
-
-	}
 
 	protected void onDblClick() throws IOException {
 
@@ -112,13 +97,6 @@ public abstract class CardStack extends JPanel {
 			}
 		}
 
-		/*
-		 * public void mouseReleased(MouseEvent e) { if
-		 * (!GameController.getInstance().isInDragging()) return;
-		 * 
-		 * CardStack targetStack = (CardStack) e.getComponent(); targetStack.onDrop();
-		 * GameController.getInstance().clearDragInfo(); }
-		 */
 	}
 
 	private class DropListener implements DropTargetListener {
