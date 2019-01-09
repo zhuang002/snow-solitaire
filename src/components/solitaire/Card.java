@@ -2,6 +2,9 @@ package components.solitaire;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DragGestureRecognizer;
+import java.awt.dnd.DragSource;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -18,6 +21,9 @@ public class Card extends JPanel  {
 	BufferedImage foreImg=null;
 	static BufferedImage backImg = null;
 
+	// Add for drag
+	private DragGestureRecognizer dgr;
+    private DragGestureHandler dragGestureHandler;
 
 	public Card(CardSuit s, int n, boolean f, Dimension size) throws IOException {
 		Initialize(getId(s,n),f,size);
@@ -137,11 +143,47 @@ public class Card extends JPanel  {
 			
 		}
 	}
+	
 
 	public void setFaceUp(boolean b) {
 		// TODO Auto-generated method stub
 		this.faceup=b;
 	}
+	
+	
+	// add for drag
+	@Override
+    public void addNotify() {
+
+        super.addNotify();
+
+        if (this.dgr == null) {
+
+            this.dragGestureHandler = new DragGestureHandler(this);
+            this.dgr = DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(
+                    this,
+                    DnDConstants.ACTION_MOVE,
+                    this.dragGestureHandler);
+
+        }
+
+    }
+	
+	@Override
+    public void removeNotify() {
+
+        if (dgr != null) {
+
+            dgr.removeDragGestureListener(dragGestureHandler);
+            dragGestureHandler = null;
+
+        }
+
+        dgr = null;
+
+        super.removeNotify();
+
+    }
 
 	private class CardMouseListener extends MouseInputAdapter {
 		public void mouseClicked(MouseEvent e) {
@@ -158,7 +200,7 @@ public class Card extends JPanel  {
 			}
 		}
 		
-		public void mouseDragged(MouseEvent e) {
+		/*public void mouseDragged(MouseEvent e) {
 			try {
 				if (e.isConsumed()) return;
 				Card card=(Card)e.getComponent();
@@ -168,16 +210,16 @@ public class Card extends JPanel  {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-		}
+		}*/
 		
-		public void mouseReleased(MouseEvent e) {
+		/*public void mouseReleased(MouseEvent e) {
 			if (!GameController.getInstance().isInDragging())
 				return;
 
 			CardStack targetStack = (CardStack)((Card)e.getComponent()).getParent();
 			targetStack.onDrop();
 			GameController.getInstance().clearDragInfo();
-		}
+		}*/
 	}
 
 	
