@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.security.InvalidParameterException;
+import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
@@ -25,6 +26,9 @@ public class Card extends JPanel  {
 	// Add for drag
 	private DragGestureRecognizer dgr;
     private DragGestureHandler dragGestureHandler;
+    
+    //Optimize image loading
+    static HashMap<Integer, BufferedImage> imgCache=new HashMap<Integer,BufferedImage>();
 
 	public Card(CardSuit s, int n, boolean f, Dimension size) throws IOException {
 		Initialize(getId(s,n),f,size);
@@ -37,8 +41,9 @@ public class Card extends JPanel  {
 		this.faceup = f;
 		this.setSize(size);
 		this.setPreferredSize(size);
-		foreImg = ImageIO.read(CardStack.class.getClassLoader().getResource(this.getImagePath()));
-		backImg = ImageIO.read(CardStack.class.getClassLoader().getResource("b.gif"));
+		foreImg = this.loadCardImage();
+		if (backImg==null)
+			backImg = ImageIO.read(CardStack.class.getClassLoader().getResource("b.gif"));
 		this.addMouseMotionListener(new CardMouseListener());
 		this.addMouseListener(new CardMouseListener());
 	}
@@ -48,6 +53,16 @@ public class Card extends JPanel  {
 	}
 
 
+	public BufferedImage loadCardImage() throws IOException {
+		BufferedImage img=null;
+		if (!imgCache.containsKey(this.ID)) {
+			img=ImageIO.read(CardStack.class.getClassLoader().getResource(this.getImagePath()));
+			imgCache.put(this.ID, img);
+			return img;
+		}
+		return imgCache.get(this.ID);
+	}
+	
 	private int getId(CardSuit s, int n) {
 		// TODO Auto-generated method stub
 		int id=0;

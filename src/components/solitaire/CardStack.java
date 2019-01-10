@@ -24,11 +24,12 @@ import javax.swing.event.MouseInputAdapter;
 public abstract class CardStack extends JPanel {
 
 	protected LinkedList<Card> cards = new LinkedList<Card>();
-	protected BufferedImage emptyImg = null;
+	static protected BufferedImage emptyImg = null;
 	protected DropListener dropListener;
 
 	public CardStack() throws IOException {
-		emptyImg = ImageIO.read(CardStack.class.getClassLoader().getResource("empty.png"));
+		if (emptyImg==null)
+			emptyImg = ImageIO.read(CardStack.class.getClassLoader().getResource("empty.png"));
 
 		setPreferredSize(new Dimension(emptyImg.getWidth(), emptyImg.getHeight()));
 
