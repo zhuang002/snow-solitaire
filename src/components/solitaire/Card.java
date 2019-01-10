@@ -52,16 +52,16 @@ public class Card extends JPanel  {
 		// TODO Auto-generated method stub
 		int id=0;
 		switch (s) {
-			case Spade:
+			case Club:
 				id=0;
 				break;
-			case Heart:
+			case Diamond:
 				id=13;
 				break;
-			case Diamond:
+			case Heart:
 				id=26;
 				break;
-			case Club:
+			case Spade:
 				id=39;
 				break;
 			default:

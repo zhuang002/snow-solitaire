@@ -257,6 +257,7 @@ public class GameController {
 		if (history==null) return false;
 		this.copyFromHistory(history);
 		this.moves--;
+		this.uiCallback.notifyMove();
 		return !this.historyQueue.isHead();
 	}
 
@@ -266,6 +267,7 @@ public class GameController {
 		if (history==null) return false;
 		this.copyFromHistory(history);
 		this.moves++;
+		this.uiCallback.notifyMove();
 		return !this.historyQueue.isTail();
 	}
 
