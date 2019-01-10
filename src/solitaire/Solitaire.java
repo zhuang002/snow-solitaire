@@ -119,7 +119,7 @@ public class Solitaire {
 		JPanel lowerPanel = new JPanel();
 		frame.getContentPane().add(lowerPanel, BorderLayout.SOUTH);
 		
-		Dimension lbDimension=new Dimension(150,16);
+		Dimension lbDimension=new Dimension(200,16);
 		JLabel lblMoves = new JLabel(" # Moves: 0");
 		lblMoves.setPreferredSize(lbDimension);
 		lowerPanel.add(lblMoves);
@@ -271,7 +271,13 @@ public class Solitaire {
 			lblMoves.setText("#Moves: "+ctrl.getMoves());
 			btnRedo.setEnabled(!ctrl.getHistoryQueue().isTail());
 			btnUndo.setEnabled(!ctrl.getHistoryQueue().isHead());
-			lblScore.setText("Score #:"+ctrl.getScore());
+			int score=ctrl.getScore();
+			String scoreText="Score #:"+ctrl.getScore();
+			if (score==52) {
+				scoreText+=" Well Done!!!!!";
+				timerTask.pause();
+			}
+			lblScore.setText(scoreText);
 		}
 		
 	}
