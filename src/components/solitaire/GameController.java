@@ -3,12 +3,13 @@ package components.solitaire;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.security.InvalidParameterException;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
+
+
 
 public class GameController {
 	static GameController instance=null;
@@ -29,7 +30,9 @@ public class GameController {
 	Random rand=new Random();
 	DragInfo dragInfo=null;
 	boolean isFreezed=false;
-	
+	HistoryQueue historyQueue=new HistoryQueue();
+	int moves=0;
+	UICallback uiCallback=null;
 	
 	public GameController()  {
 	}
@@ -185,42 +188,19 @@ public class GameController {
 			this.closeStack.cards.add(new Card(cards[i],false,this.getCardDimension()));
 		}
 		
-		backupStacks();
-
-	}
-
-	private void backupStacks() {
-		// TODO Auto-generated method stub
 		
-		this.enclosedCardsBK.clear();
-		this.enclosedCardsBK.addAll(this.closeStack.cards);
-		
-		for (int i=0;i<this.listStacksSize;i++) {
-			this.listStacksBK[i].clear();
-			this.listStacksBK[i].addAll( this.listStacks[i].cards);
-		}
+		this.historyQueue.clear();
+		this.historyQueue.addHistory();
+		this.moves=0;
+		this.uiCallback.notifyMove();
 	}
 	
 	
 	public void restoreStacks() {
-		this.openedStack.cards.clear();
-		
-		this.closeStack.cards.clear();
-		this.closeStack.cards.addAll(this.enclosedCardsBK);
-		for (Card card: this.closeStack.cards) {
-			card.setFaceUp(false);
-		}
-		
-		for (int i=0;i<this.resolvedStacksSize;i++) {
-			this.resolvedStacks[i].cards.clear();
-		}
-		
-		for (int i=0;i<this.listStacksSize;i++) {
-			this.listStacks[i].cards.clear();
-			this.listStacks[i].cards.addAll( this.listStacksBK[i]);
-			for (int j=0;j<this.listStacks[i].cards.size()-1;j++)
-				this.listStacks[i].cards.get(j).setFaceUp(false);
-		}
+		History history=this.historyQueue.rewind();
+		this.copyFromHistory(history);
+		this.moves=0;
+		this.uiCallback.notifyMove();
 	}
 
 	private int[] suffleCards() {
@@ -271,9 +251,214 @@ public class GameController {
 		return this.isFreezed;
 	}
 
-	
+	public boolean undo() {
+		// TODO Auto-generated method stub
+		History history=this.historyQueue.stepBack();
+		if (history==null) return false;
+		this.copyFromHistory(history);
+		this.moves--;
+		return !this.historyQueue.isHead();
+	}
+
+	public boolean redo() {
+		// TODO Auto-generated method stub
+		History history=this.historyQueue.stepForward();
+		if (history==null) return false;
+		this.copyFromHistory(history);
+		this.moves++;
+		return !this.historyQueue.isTail();
+	}
 
 	
+
+	private void copyFromHistory(History history) {
+		// TODO Auto-generated method stub
+		this.openedStack.cards=history.cloneCards(history.getOpenedCards());
+		this.closeStack.cards=history.cloneCards(history.getEnclosedCards());
+		for (int i=0;i<this.resolvedStacksSize;i++) {
+			this.resolvedStacks[i].cards=history.cloneCards(history.getResolvedStackCards(i));
+		}
+		for (int i=0;i<this.listStacksSize;i++) {
+			this.listStacks[i].cards=history.cloneCards(history.getListStackCards(i));
+		}
+	}
+
+	private void copyToHistory(History history) {
+		// TODO Auto-generated method stub
+		history.cloneOpenedCards(this.openedStack.cards);
+		history.cloneEnclosedCards(this.closeStack.cards);
+		for (int i=0;i<this.resolvedStacksSize;i++) {
+			history.cloneResolvedStackCards(i,this.resolvedStacks[i].cards);
+		}
+		for (int i=0;i<this.listStacksSize;i++) {
+			history.cloneListStackCards(i,this.listStacks[i].cards);
+		}
+	}
+	
+	public int getScore() {
+		int score=0;
+		for (int i=0;i<this.resolvedStacksSize;i++) {
+			score+=this.resolvedStacks[i].cards.size();
+		}
+		return score;
+	}
+
+	private class History {
+		LinkedList<Card> closedCards;
+		LinkedList<Card> openedCards;
+		ArrayList<LinkedList<Card>> resolvedStacksCards=new ArrayList<LinkedList<Card>>();
+		ArrayList<LinkedList<Card>> listStacksCards=new ArrayList<LinkedList<Card>>();
+		
+		public LinkedList<Card> getOpenedCards() {
+			// TODO Auto-generated method stub
+			return this.openedCards;
+		}
+
+		public void cloneListStackCards(int i, LinkedList<components.solitaire.Card> cards) {
+			// TODO Auto-generated method stub
+			for (int j=listStacksCards.size();j<=i;j++) {
+				this.listStacksCards.add(null);
+			}
+			this.listStacksCards.set(i, cloneCards(cards));
+			
+		}
+
+		private LinkedList<Card> cloneCards(LinkedList<Card> cards) {
+			// TODO Auto-generated method stub
+			if (cards==null) return null;
+			LinkedList<Card> ret=new LinkedList<Card>();
+			for (int i=0;i<cards.size();i++) {
+				ret.add(cards.get(i).clone());
+			}
+			return ret;
+		}
+
+		public void cloneResolvedStackCards(int i, LinkedList<components.solitaire.Card> cards) {
+			// TODO Auto-generated method stub
+			for (int j=resolvedStacksCards.size();j<=i;j++) {
+				this.resolvedStacksCards.add(null);
+			}
+			this.resolvedStacksCards.set(i, cloneCards(cards));
+		}
+
+		public void cloneEnclosedCards(LinkedList<components.solitaire.Card> cards) {
+			// TODO Auto-generated method stub
+			this.closedCards=cloneCards(cards);
+		}
+
+		public void cloneOpenedCards(LinkedList<components.solitaire.Card> cards) {
+			// TODO Auto-generated method stub
+			this.openedCards=cloneCards(cards);
+		}
+
+		public LinkedList<Card> getListStackCards(int i) {
+			// TODO Auto-generated method stub
+			return this.listStacksCards.get(i);
+		}
+
+		public LinkedList<Card> getResolvedStackCards(int i) {
+			// TODO Auto-generated method stub
+			return this.resolvedStacksCards.get(i);
+		}
+
+		public LinkedList<Card> getEnclosedCards() {
+			// TODO Auto-generated method stub
+			return this.closedCards;
+		}
+		
+		
+	}
+	
+	public class HistoryQueue {
+		ArrayList<History> queue=new ArrayList<History>();
+		int current=-1;
+
+		public History stepForward() {
+			// TODO Auto-generated method stub
+			if (isTail()) return null;
+			current++;
+			return queue.get(current);
+
+		}
+
+		public void clear() {
+			// TODO Auto-generated method stub
+			current=-1;
+			this.queue=new ArrayList<History>();
+		}
+
+		public History rewind() {
+			// TODO Auto-generated method stub
+			if (this.queue.isEmpty()) {
+				current=-1;
+				return null;
+			}
+			current=0;
+			return this.queue.get(0);
+		}
+
+		public void addHistory() {
+			// TODO Auto-generated method stub
+			History history=new History();
+			GameController.getInstance().copyToHistory(history);
+			
+			if (!this.queue.isEmpty()) {
+				int size=this.queue.size();
+				for (int i=current+1;i<size;i++) {
+					this.queue.remove(current+1);
+				}
+			}
+			this.queue.add(history);
+			current++;
+		}
+
+		public boolean isTail() {
+			// TODO Auto-generated method stub
+			if (this.queue.isEmpty()) {
+				current=-1;
+				return true;
+			}
+			return current>=this.queue.size()-1;
+		}
+
+		public boolean isHead() {
+			// TODO Auto-generated method stub
+			if (this.queue.isEmpty()) {
+				current=-1;
+				return true;
+			}
+			return current<=0;
+		}
+
+		public History stepBack() {
+			// TODO Auto-generated method stub
+			if (isHead()) return null;
+			current--;
+			return queue.get(current);
+		}
+	}
+
+	public void notifyMove() {
+		// TODO Auto-generated method stub
+		this.historyQueue.addHistory();
+		this.moves++;
+		this.uiCallback.notifyMove();
+		
+	}
+
+	public int getMoves() {
+		// TODO Auto-generated method stub
+		return this.moves;
+	}
+	
+	public HistoryQueue getHistoryQueue() {
+		return this.historyQueue;
+	}
+
+	public void setNotifyMoveCallback(UICallback myCallback) {
+		// TODO Auto-generated method stub
+		this.uiCallback=myCallback;
+	}
 	
 
 }

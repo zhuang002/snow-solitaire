@@ -56,6 +56,7 @@ public class OpenedCards extends CardStack {
 			} else return;
 			stack.repaint();
 			this.repaint();
+			GameController.getInstance().notifyMove();
 		}
 	}
 

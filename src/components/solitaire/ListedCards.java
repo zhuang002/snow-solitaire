@@ -44,6 +44,7 @@ public class ListedCards extends CardStack {
 					this.cards.getLast().setFaceUp(true);
 				stack.repaint();
 				this.repaint();
+				GameController.getInstance().notifyMove();
 			}
 		}
 	}

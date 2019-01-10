@@ -2,6 +2,7 @@ package solitaire;
 
 import java.awt.EventQueue;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -12,6 +13,8 @@ import javax.swing.JPanel;
 import javax.swing.event.MouseInputAdapter;
 import components.solitaire.CardStack;
 import components.solitaire.GameController;
+import components.solitaire.UICallback;
+
 import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
 import javax.swing.JButton;
@@ -93,7 +96,12 @@ public class Solitaire {
 		upperPanel.add(btnPause);
 		
 		JButton btnUndo = new JButton("Undo");
+		btnUndo.setEnabled(false);
 		upperPanel.add(btnUndo);
+		
+		JButton btnRedo = new JButton("Redo");
+		btnRedo.setEnabled(false);
+		upperPanel.add(btnRedo);
 		
 		JButton btnLevel = new JButton("Easy Level");
 		btnLevel.addActionListener(new ActionListener() {
@@ -111,16 +119,16 @@ public class Solitaire {
 		JPanel lowerPanel = new JPanel();
 		frame.getContentPane().add(lowerPanel, BorderLayout.SOUTH);
 		
-		Dimension lbDimension=new Dimension(120,16);
-		JLabel lblMoves = new JLabel(" # Moves: ");
+		Dimension lbDimension=new Dimension(150,16);
+		JLabel lblMoves = new JLabel(" # Moves: 0");
 		lblMoves.setPreferredSize(lbDimension);
 		lowerPanel.add(lblMoves);
 		
-		JLabel lblTime = new JLabel("Time Elapsed:");
+		JLabel lblTime = new JLabel("Time Elapsed: 0s");
 		lblTime.setPreferredSize(lbDimension);
 		lowerPanel.add(lblTime);
 		
-		JLabel lblScore = new JLabel("Score #: ");
+		JLabel lblScore = new JLabel("Score #: 0");
 		lblScore.setPreferredSize(lbDimension);
 		lowerPanel.add(lblScore);
 
@@ -219,8 +227,53 @@ public class Solitaire {
 			}
 		});
 		
+		btnUndo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				btnUndo.setEnabled(GameController.getInstance().undo());
+				btnRedo.setEnabled(true);
+				frame.invalidate();
+				frame.repaint();
+			}
+		});
+		
+		btnRedo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				btnRedo.setEnabled(GameController.getInstance().redo());
+				btnUndo.setEnabled(true);
+				frame.invalidate();
+				frame.repaint();
+			}
+		});
+		
 		frame.addMouseMotionListener(new CardStackMouseListener());
 		frame.addMouseListener(new CardStackMouseListener());
+		
+		GameController.getInstance().setNotifyMoveCallback(new MyCallback(lblMoves, lblScore, btnRedo, btnUndo));
+	}
+	
+	
+	private class MyCallback implements UICallback {
+		JLabel lblMoves;
+		JLabel lblScore;
+		JButton btnRedo;
+		JButton btnUndo;
+		
+		public MyCallback(JLabel move, JLabel score, JButton redo, JButton undo) {
+			this.lblMoves=move;
+			this.lblScore=score;
+			this.btnRedo=redo;
+			this.btnUndo=undo;
+		}
+		@Override
+		public void notifyMove() {
+			// TODO Auto-generated method stub
+			GameController ctrl=GameController.getInstance();
+			lblMoves.setText("#Moves: "+ctrl.getMoves());
+			btnRedo.setEnabled(!ctrl.getHistoryQueue().isTail());
+			btnUndo.setEnabled(!ctrl.getHistoryQueue().isHead());
+			lblScore.setText("Score #:"+ctrl.getScore());
+		}
+		
 	}
 	
 	private class CardStackMouseListener extends MouseInputAdapter {
@@ -267,5 +320,7 @@ public class Solitaire {
 		}
 		
 	}
+	
+	
 
 }

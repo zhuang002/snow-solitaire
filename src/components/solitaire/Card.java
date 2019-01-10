@@ -20,6 +20,7 @@ public class Card extends JPanel  {
 	BufferedImage img = null;
 	BufferedImage foreImg=null;
 	static BufferedImage backImg = null;
+	Dimension size;
 
 	// Add for drag
 	private DragGestureRecognizer dgr;
@@ -197,5 +198,13 @@ public class Card extends JPanel  {
 		
 	}
 
-	
+	public Card clone() {
+		try {
+			return new Card(this.ID,this.faceup,this.getPreferredSize());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

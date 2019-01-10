@@ -60,6 +60,7 @@ public class DragGestureHandler implements DragGestureListener, DragSourceListen
         		this.sourceStack.invalidate();
             	this.sourceStack.repaint();
         	}
+        	GameController.getInstance().notifyMove();
         }
         GameController.getInstance().clearDragInfo();
 	}
